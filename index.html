@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="NEUROFLEX 是一款纯前端认知训练游戏，包含色卡冲突、Go/No-Go、找不同、短时记忆和弹珠舒尔特五种训练模式。"
+    />
+    <meta name="theme-color" content="#fff6e7" />
+    <title>NEUROFLEX · 认知训练场</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fff6e7'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%236242f5' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23f07b39'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./game.js"></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <div class="noise" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <section class="screen home-screen" id="home-screen" aria-labelledby="home-title">
+        <div class="home-stage">
+          <div class="hero-grid home-grid">
+            <div class="hero-copy">
+              <header class="site-header">
+                <a class="brand" href="./" aria-label="NEUROFLEX 首页">
+                  <span class="brand-mark" aria-hidden="true">
+                    <span class="brand-orbit"></span>
+                    <span class="brand-core"></span>
+                  </span>
+                  <span class="brand-copy">
+                    <strong>NEUROFLEX</strong>
+                    <small>认知训练场</small>
+                  </span>
+                </a>
+
+                <div class="header-actions">
+                  <button class="icon-button" id="sound-toggle" type="button" aria-pressed="true">
+                    <svg class="sound-on-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 9.5v5h4l5 4v-13l-5 4H4Z" />
+                      <path d="M16 8.2a5.2 5.2 0 0 1 0 7.6M18.7 5.5a9 9 0 0 1 0 13" />
+                    </svg>
+                    <svg class="sound-off-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 9.5v5h4l5 4v-13l-5 4H4Z" />
+                      <path d="m16 9 5 6M21 9l-5 6" />
+                    </svg>
+                    <span id="sound-label">声音开</span>
+                  </button>
+                  <button class="text-button" id="how-to-button" type="button">怎么玩</button>
+                </div>
+              </header>
+
+              <h1 id="home-title">认知<em>训练场</em></h1>
+              <p class="lede">
+                五种短时认知挑战。每局固定 15 题，选择 Level 1–4，
+                在准确与速度之间找到你的稳定点。
+              </p>
+
+              <div class="mode-grid home-mode-grid" id="mode-grid" aria-label="训练模式">
+                <button class="mode-card is-selected" type="button" data-mode-card="stroop">
+                  <strong>色卡冲突</strong>
+                  <small>抑制控制 · 注意选择</small>
+                </button>
+                <button class="mode-card" type="button" data-mode-card="goNoGo">
+                  <strong>Go / No-Go</strong>
+                  <small>反应抑制 · 冲动控制</small>
+                </button>
+                <button class="mode-card" type="button" data-mode-card="spotDifference">
+                  <strong>找不同</strong>
+                  <small>视觉搜索 · 细节辨别</small>
+                </button>
+                <button class="mode-card" type="button" data-mode-card="sequenceMemory">
+                  <strong>短时记忆</strong>
+                  <small>序列记忆 · 信息保持</small>
+                </button>
+                <button class="mode-card" type="button" data-mode-card="schulte">
+                  <strong>弹珠舒尔特</strong>
+                  <small>视觉搜索 · 加工速度</small>
+                </button>
+                <button class="mode-card" type="button" data-mode-card="mixed">
+                  <strong>综合训练</strong>
+                  <small>五种玩法混合 · 每种 3 题</small>
+                </button>
+              </div>
+            </div>
+
+            <form class="setup-panel" id="setup-form">
+              <div class="panel-heading">
+                <h2>训练设置</h2>
+              </div>
+
+              <div class="selected-mode-summary">
+                <span class="micro-label">当前训练</span>
+                <h3 id="selected-mode-title">色卡冲突</h3>
+                <p id="selected-mode-description">忽略文字含义，只选择字体实际颜色。</p>
+              </div>
+
+              <fieldset class="field-group level-field">
+                <legend>Level</legend>
+                <div class="segmented level-segmented" role="group" aria-label="Level">
+                  <label><input type="radio" name="level" value="1" /><span>1</span></label>
+                  <label><input type="radio" name="level" value="2" checked /><span>2</span></label>
+                  <label><input type="radio" name="level" value="3" /><span>3</span></label>
+                  <label><input type="radio" name="level" value="4" /><span>4</span></label>
+                </div>
+                <p class="level-hint" id="level-hint">Level 越高，速度越快、干扰越强。</p>
+              </fieldset>
+
+              <div class="best-card">
+                <span>本机最佳</span>
+                <strong id="best-score">还没有记录</strong>
+                <small id="best-accuracy">完成任意一局后记录成绩</small>
+              </div>
+
+              <button class="primary-button start-button" type="submit">
+                <span>开始训练</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h13M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <p class="privacy-note">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v10H5z" />
+                </svg>
+                无需账号，训练数据只保存在当前浏览器。
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen game-screen game-screen-v2" id="game-screen" aria-labelledby="game-instruction" hidden>
+        <div class="game-toolbar">
+          <div class="session-pills">
+            <span class="session-pill" id="session-mode-label">色卡冲突</span>
+            <span class="session-pill accent" id="session-level-label">LEVEL 2</span>
+          </div>
+          <button class="quit-button" id="quit-button" type="button">结束训练</button>
+        </div>
+
+        <div class="game-layout game-layout-v2">
+          <aside class="game-stats" aria-label="实时训练数据">
+            <div class="stat-block score-block">
+              <span class="stat-label">SCORE</span>
+              <strong id="live-score">0000</strong>
+            </div>
+            <div class="stat-block">
+              <span class="stat-label">正确率</span>
+              <strong id="live-accuracy">—</strong>
+              <div class="mini-meter"><i id="accuracy-meter"></i></div>
+            </div>
+            <div class="stat-block">
+              <span class="stat-label">连续正确</span>
+              <strong><span id="live-combo">0</span><small> COMBO</small></strong>
+            </div>
+            <div class="stat-block split-stat">
+              <span><small>正确</small><strong id="live-correct">0</strong></span>
+              <span><small>错误</small><strong id="live-errors">0</strong></span>
+            </div>
+            <span id="trial-counter" hidden>01 / 15</span>
+          </aside>
+
+          <section class="playfield" aria-label="训练区域">
+            <div class="playfield-head">
+              <div>
+                <p class="status-kicker" id="mode-kicker">色卡冲突 · LEVEL 2</p>
+                <strong id="game-instruction">准备开始</strong>
+              </div>
+              <span class="question-counter" id="question-counter">01 / 15</span>
+            </div>
+
+            <div class="timer-track" aria-hidden="true"><i id="timer-fill"></i></div>
+            <div class="mode-stage" id="mode-stage"></div>
+          </section>
+        </div>
+
+        <div class="live-feedback" id="live-feedback" role="status" aria-live="assertive"></div>
+
+        <div class="countdown-overlay" id="countdown-overlay">
+          <div class="countdown-rings" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span id="countdown-value">3</span>
+          <p id="countdown-caption">放松肩颈，训练即将开始</p>
+        </div>
+      </section>
+
+      <section class="screen results-screen" id="results-screen" aria-labelledby="results-title" hidden>
+        <div class="results-card">
+          <div class="results-hero">
+            <div class="grade-orbit" id="grade-orbit">
+              <span class="grade-ring" aria-hidden="true"></span>
+              <strong id="result-grade">A</strong>
+            </div>
+            <div>
+              <h2 id="results-title">训练完成</h2>
+            </div>
+            <div class="result-score">
+              <span>本轮得分</span>
+              <strong id="result-score">0000</strong>
+              <small id="result-best">本机最佳 0000</small>
+            </div>
+          </div>
+
+          <div class="result-metrics">
+            <div>
+              <span>正确率</span>
+              <strong id="result-accuracy">—</strong>
+              <small>15 题中的正确比例</small>
+            </div>
+            <div>
+              <span>正确 / 错误</span>
+              <strong><span id="result-correct">0</span><span class="result-divider">/</span><span id="result-errors">0</span></strong>
+              <small>包含误答与漏答</small>
+            </div>
+            <div>
+              <span>超时</span>
+              <strong id="result-timeouts">0</strong>
+              <small>未在时限内完成</small>
+            </div>
+            <div>
+              <span>最佳连击</span>
+              <strong id="result-combo">0</strong>
+              <small id="result-reaction">中位反应 —</small>
+            </div>
+          </div>
+
+          <div class="recommendation-card">
+            <div>
+              <h3 id="recommendation-title">保持当前节奏</h3>
+              <span id="recommendation-body">先完成几轮，让表现稳定下来。</span>
+            </div>
+            <div class="recommendation-actions">
+              <button class="secondary-button compact-button" id="home-button" type="button">返回首页</button>
+              <button class="primary-button compact-button" id="play-again-button" type="button">再练一次</button>
+            </div>
+          </div>
+
+          <div class="results-actions">
+            <span>训练数据仅保存在本机</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="tutorial-dialog" id="tutorial-dialog" aria-labelledby="tutorial-title">
+      <form method="dialog" class="dialog-shell">
+        <button class="dialog-close" value="cancel" aria-label="关闭玩法说明">×</button>
+        <p class="micro-label">HOW TO PLAY</p>
+        <h2 id="tutorial-title">五种挑战，每局 15 题</h2>
+        <p class="dialog-lede">
+          先选择模式和 Level，再完成固定 15 题。Level 1–4 全部开放，
+          但每提升一级，速度会更快、干扰会更强。
+        </p>
+        <div class="tutorial-steps">
+          <article>
+            <span>01</span>
+            <h3>选择模式</h3>
+            <p>色卡冲突、Go / No-Go、找不同、短时记忆、弹珠舒尔特。</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>选择 Level</h3>
+            <p>Level 1–4 可直接选择，越高越快、越难。</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>完成 15 题</h3>
+            <p>准确优先，不需要抢答；错误和超时都会记录。</p>
+          </article>
+        </div>
+        <div class="tutorial-legend">
+          <span><i class="cyan"></i> 15 题一局</span>
+          <span><i class="amber"></i> Level 1–4</span>
+          <span><i class="white"></i> 数据保存在本机</span>
+        </div>
+        <button class="primary-button" value="confirm">明白了</button>
+      </form>
+    </dialog>
+  </body>
+</html>
